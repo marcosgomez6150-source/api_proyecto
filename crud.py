@@ -1,33 +1,22 @@
-from sqlalchemy.orm import Session
-import models
-
-def crear_usuario(db: Session, usuario):
-    nuevo = models.Usuario(nombre=usuario.nombre)
-    db.add(nuevo)
+def crear_usuario(db, usuario):
+    db_usuario = models.Usuario(**usuario.dict())
+    db.add(db_usuario)
     db.commit()
-    db.refresh(nuevo)
-    return nuevo
+    db.refresh(db_usuario)
+    return db_usuario
 
-def crear_cuenta(db: Session, cuenta):
-    nueva = models.Cuenta(banco=cuenta.banco, usuario_id=cuenta.usuario_id)
-    db.add(nueva)
+
+def crear_cuenta(db, cuenta):
+    db_cuenta = models.Cuenta(**cuenta.dict())
+    db.add(db_cuenta)
     db.commit()
-    db.refresh(nueva)
-    return nueva
+    db.refresh(db_cuenta)
+    return db_cuenta
 
-def crear_movimiento(db: Session, movimiento):
-    cuenta = db.query(models.Cuenta).filter(models.Cuenta.id == movimiento.cuenta_id).first()
-    
-    if movimiento.tipo == "deposito":
-        cuenta.saldo += movimiento.monto
-    elif movimiento.tipo == "retiro":
-        cuenta.saldo -= movimiento.monto
 
-    nuevo = models.Movimiento(**movimiento.dict())
-    db.add(nuevo)
+def crear_movimiento(db, movimiento):
+    db_mov = models.Movimiento(**movimiento.dict())
+    db.add(db_mov)
     db.commit()
-    db.refresh(nuevo)
-    return nuevo
-
-def obtener_movimientos(db: Session, cuenta_id: int):
-    return db.query(models.Movimiento).filter(models.Movimiento.cuenta_id == cuenta_id).all()
+    db.refresh(db_mov)
+    return db_mov
