@@ -13,7 +13,7 @@ class Movimiento(MovimientoBase):
     id: int
 
     class Config:
-        orm_mode = True
+         from_attributes = True
 
 class CuentaBase(BaseModel):
     saldo: float
@@ -27,13 +27,12 @@ class Cuenta(CuentaBase):
     movimientos: List[Movimiento] = []
 
     class Config:
-        orm_mode = True
-
+         from_attributes = True
 
 
 class UsuarioBase(BaseModel):
     nombre: str
-    email: str
+    correo: str 
 
 class UsuarioCreate(UsuarioBase):
     pass
@@ -43,4 +42,4 @@ class Usuario(UsuarioBase):
     cuentas: List[Cuenta] = []
 
     class Config:
-        orm_mode = True
+     from_attributes = True
