@@ -3,7 +3,10 @@ from sqlalchemy.orm import Session
 import crud, schemas, models
 from database import SessionLocal, engine
 
+# ❌ QUITAR ESTO (era el error)
+# Base.metadata.create_all(bind=engine)
 
+# ✅ CORRECTO
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -11,7 +14,6 @@ app = FastAPI(
     description="Servicio web para la gestión de usuarios, cuentas y movimientos financieros",
     version="1.1.0"
 )
-
 
 
 def get_db():
@@ -22,48 +24,26 @@ def get_db():
         db.close()
 
 
-@app.get("/", tags=["Inicio"])
+@app.get("/")
 def read_root():
-    return {
-        "mensaje": "API de la billetera funcionando correctamente en Render",
-        "documentacion": "/docs",
-        "redoc": "/redoc",
-        "endpoints_disponibles": {
-            "crear_usuario": "POST /usuarios/",
-            "crear_cuenta": "POST /cuentas/",
-            "ver_cuentas_usuario": "GET /usuarios/{usuario_id}/cuentas",
-            "detalle_usuario": "GET /usuarios/{usuario_id}/detalle",
-            "crear_movimiento": "POST /movimientos/",
-            "ver_movimientos": "GET /movimientos/{cuenta_id}"
-        }
-    }
+    return {"mensaje": "API funcionando correctamente"}
 
 
-@app.post("/usuarios/", tags=["Usuarios"])
+@app.post("/usuarios/")
 def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     return crud.crear_usuario(db, usuario)
 
 
-@app.get("/usuarios/{usuario_id}/cuentas", tags=["Usuarios"])
-def ver_cuentas_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Cuenta).filter(models.Cuenta.usuario_id == usuario_id).all()
-
-
-@app.get("/usuarios/{usuario_id}/detalle", tags=["Usuarios"])
-def detalle_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    return db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
-
-
-@app.post("/cuentas/", tags=["Cuentas"])
+@app.post("/cuentas/")
 def crear_cuenta(cuenta: schemas.CuentaCreate, db: Session = Depends(get_db)):
     return crud.crear_cuenta(db, cuenta)
 
 
-@app.post("/movimientos/", tags=["Movimientos"])
+@app.post("/movimientos/")
 def crear_movimiento(movimiento: schemas.MovimientoCreate, db: Session = Depends(get_db)):
     return crud.crear_movimiento(db, movimiento)
 
 
-@app.get("/movimientos/{cuenta_id}", tags=["Movimientos"])
+@app.get("/movimientos/{cuenta_id}")
 def ver_movimientos(cuenta_id: int, db: Session = Depends(get_db)):
     return crud.obtener_movimientos(db, cuenta_id)

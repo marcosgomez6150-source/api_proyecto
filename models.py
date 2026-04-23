@@ -7,7 +7,7 @@ class Usuario(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String)
-    email = Column(String)
+    correo = Column(String)
 
     cuentas = relationship("Cuenta", back_populates="usuario")
 
