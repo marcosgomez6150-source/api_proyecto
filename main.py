@@ -2,7 +2,9 @@ from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 import crud, schemas, models
 from database import SessionLocal, engine
-from models import Base
+
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="API de Billetera",
@@ -10,7 +12,6 @@ app = FastAPI(
     version="1.1.0"
 )
 
-Base.metadata.create_all(bind=engine)
 
 
 def get_db():
@@ -47,10 +48,10 @@ def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
 def ver_cuentas_usuario(usuario_id: int, db: Session = Depends(get_db)):
     return db.query(models.Cuenta).filter(models.Cuenta.usuario_id == usuario_id).all()
 
+
 @app.get("/usuarios/{usuario_id}/detalle", tags=["Usuarios"])
 def detalle_usuario(usuario_id: int, db: Session = Depends(get_db)):
-    usuario = db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
-    return usuario
+    return db.query(models.Usuario).filter(models.Usuario.id == usuario_id).first()
 
 
 @app.post("/cuentas/", tags=["Cuentas"])
@@ -61,6 +62,7 @@ def crear_cuenta(cuenta: schemas.CuentaCreate, db: Session = Depends(get_db)):
 @app.post("/movimientos/", tags=["Movimientos"])
 def crear_movimiento(movimiento: schemas.MovimientoCreate, db: Session = Depends(get_db)):
     return crud.crear_movimiento(db, movimiento)
+
 
 @app.get("/movimientos/{cuenta_id}", tags=["Movimientos"])
 def ver_movimientos(cuenta_id: int, db: Session = Depends(get_db)):
